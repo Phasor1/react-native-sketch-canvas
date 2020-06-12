@@ -292,12 +292,21 @@ public class SketchCanvas extends View {
         WritableMap event = Arguments.createMap();
         Bitmap bitmap = createImage(format.equals("png") && transparent, includeImage, includeText, cropToImageSize);
         ByteArrayOutputStream byteArrayOS = new ByteArrayOutputStream();
-
+        int[] pixs = new int[getWidth()*getHeight()];
+        bitmap.getPixels(pixs, 0,getWidth(), 0, 0, getWidth(), getHeight()); 
+        int counter = 0;
+        for(int c = 0; c < pixs.length; c++){
+            int cur = pixs[c];
+            if(cur != -1){
+                counter++;
+            }
+        }
+        Log.e("SketchCanvas", Integer.toString(counter));
         bitmap.compress(
             format.equals("png") ? Bitmap.CompressFormat.PNG : Bitmap.CompressFormat.JPEG,
             format.equals("png") ? 100 : 90,
             byteArrayOS);
-        return Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
+        return (counter > 0 ? "" : "no_image") + Base64.encodeToString(byteArrayOS.toByteArray(), Base64.DEFAULT);
     }
 
     @Override
